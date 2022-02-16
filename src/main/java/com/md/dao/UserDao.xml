@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.md.dao.UserDao">
+
+    <!--返回类型-->
+    <resultMap id="User" type="com.md.entity.User">
+        <id column="id" property="id"/>
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="remark" property="remark"/>
+        <result column="user_name" property="userName"/>
+        <result column="user_pwd" property="userPwd"/>
+    </resultMap>
+
+
+    <!--条件，其中名字根据模糊查询来进行的-->
+    <sql id="UserFindCriteria">
+        <where>
+            <if test="id != null">and id = #{id}</if>
+            <if test="userName != null and userName != '' ">and user_name = #{userName}</if>
+            <if test="userPwd != null and userPwd != '' ">and user_pwd = #{userPwd}</if>
+            <if test="name != null and name != '' ">and name like concat('%',#{name},'%')</if>
+            <if test="remark != null and remark != '' ">and remark = #{remark}</if>
+        </where>
+    </sql>
+
+
+    <sql id="UserUpdateCriteria">
+        <set>
+            <if test="updateId != null">id = #{updateId},</if>
+            <if test="updateUserName != null and updateUserName != '' ">user_name = #{updateUserName},</if>
+            <if test="updateUserPwd != null and updateUserPwd != '' ">user_pwd = #{updateUserPwd},</if>
+            <if test="updateName != null and updateName != '' ">name = #{updateName},</if>
+            <if test="updateRemark != null and updateRemark != '' ">remark = #{updateRemark},</if>
+        </set>
+    </sql>
+
+
+
+    <!--id自增-->
+    <insert id="insert" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_user(user_name,user_pwd,name,remark) values (#{userName},#{userPwd},#{name},#{remark})
+    </insert>
+
+
+    <delete id="delete">
+        delete from tb_user
+        <include refid="UserFindCriteria"/>
+    </delete>
+
+    <update id="update" >
+      update tb_user
+        <include refid="UserUpdateCriteria"/>
+        <include refid="UserFindCriteria"/>
+    </update>
+
+
+    <select id="query" resultMap="User">
+        <!-- 要执行的 sql 语句 -->
+        select id,user_name,user_pwd,name,remark from tb_user
+        <include refid="UserFindCriteria"/>
+        <if test="offset!=null and rows!=null">limit ${offset} , ${rows}</if>
+    </select>
+
+
+    <select id="detail" resultMap="User">
+        select id,user_name,user_pwd,name,remark from tb_user
+        <include refid="UserFindCriteria"/>
+        limit 1
+    </select>
+
+
+    <select id="count" resultType="Integer" >
+        select count(id) from tb_user
+        <include refid="UserFindCriteria"/>
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.md.dao.SubjectDao">
+    <resultMap type="com.md.entity.Subject" id="Subject">
+        <id column="id" property="id"/>
+        <result column="college" property="college"/>
+        <result column="id" property="id"/>
+        <result column="remark" property="remark"/>
+        <result column="subject_name" property="subjectName"/>
+    </resultMap>
+
+    <insert id="create" keyProperty="id" useGeneratedKeys="true" parameterType="com.md.entity.Subject">
+		insert into tb_subject(
+			college,
+			remark,
+			subject_name
+		)values(
+			#{college},
+			#{remark},
+			#{subjectName}
+		)
+	</insert>
+
+    <select id="query" resultMap="Subject">
+        select * from tb_subject
+        <include refid="SubjectFindCriteria"/>
+        <if test="offset!=null and rows!=null">limit ${offset} , ${rows}</if>
+    </select>
+
+    <select id="count" resultType="int">
+        select count(1) from tb_subject
+        <include refid="SubjectFindCriteria"/>
+    </select>
+
+    <select id="detail" resultMap="Subject">
+        select * from tb_subject
+        <include refid="SubjectFindCriteria"/>
+        limit 1
+    </select>
+
+    <delete id="delete">
+        delete from tb_subject
+        <include refid="SubjectFindCriteria"/>
+    </delete>
+    <update id="update">
+        update tb_subject
+        <include refid="SubjectUpdateCriteria"/>
+        <include refid="SubjectFindCriteria"/>
+    </update>
+    <sql id="SubjectFindCriteria">
+        <where>
+            <if test="college != null and college != ''">and college like concat('%',#{college},'%')</if>
+            <if test="id != null">and id = #{id}</if>
+            <if test="subjectName != null and subjectName != ''">and subject_name like concat('%',#{subjectName},'%')</if>
+        </where>
+    </sql>
+    <sql id="SubjectUpdateCriteria">
+        <set>
+            <if test="updateCollege != null and updateCollege != ''">college = #{updateCollege},</if>
+            <if test="updateId != null">id = #{updateId},</if>
+            <if test="updateRemark != null and updateRemark != ''">remark = #{updateRemark},</if>
+            <if test="updateSubjectName != null and updateSubjectName != ''">subject_name = #{updateSubjectName},</if>
+        </set>
+    </sql>
+</mapper>

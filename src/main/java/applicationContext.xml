@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+
+    <!--spring的配置文件，声明service、dao、工具类对象-->
+
+
+
+    <!--注册组件扫描器-->
+    <!--声明service的注解@Service所在的包名位置-->
+    <context:component-scan base-package="com.md.service"/>
+
+
+    <!--工具类也进行扫描-->
+    <context:component-scan base-package="com.md.utils"/>
+
+    <!--声明数据源，连接数据库-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <bean id="myDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}" />
+        <property name="maxActive" value="${jdbc.maxActive}" />
+    </bean>
+
+
+
+
+
+
+    <!--SqlSessionFactory-->
+    <bean id="SqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="myDataSource"/>
+        <property name="configLocation" value="classpath:mybatis.xml"/>
+        <!--分页插件pageHelper-->
+        <!--不需要再mybatis的配置文件中进行配置了-->
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <value>
+                            helperDialect=mysql
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+
+
+
+    <!--创建 dao对象-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="SqlSessionFactory"/>
+        <!--指定包名，包名是dao接口所在的包名，dao默认对象的名称：是接口名字的首字母小写-->
+        <property name="basePackage" value="com.md.dao"/>
+    </bean>
+
+    <mvc:default-servlet-handler/>
+    <!--上面的这个是一个模板，只有一些配置文件的路径是根据自己创建写的-->
+
+</beans>

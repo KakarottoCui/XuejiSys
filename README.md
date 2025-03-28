@@ -1,7 +1,7 @@
 # XuejiSys
 基于SSM框架的学籍管理系统
 
-演示视频链接：https://live.csdn.net/v/185844
+演示视频链接：https://www.bilibili.com/video/BV1J44y1p7dj/
 
 基于SSM框架和LayUI
 
